@@ -1,8 +1,9 @@
 import praw
 import pyttsx3
 from playwright.sync_api import playwright, sync_playwright
-from moviepy.editor import VideoFileClip, AudioFileClip, ImageClip, CompositeVideoClip, CompositeAudioClip
+from moviepy.editor import *
 import random
+import os
 
 # Connect to the Reddit API
 reddit = praw.Reddit(client_id='XJauAx6ojQ442IOs9tlyFg',
@@ -11,7 +12,7 @@ reddit = praw.Reddit(client_id='XJauAx6ojQ442IOs9tlyFg',
 
 # Get the top post from the AskMe subreddit for today
 #AmItheAsshole offmychest unpopularopinion copypasta
-subreddit = reddit.subreddit("unpopularopinion")
+subreddit = reddit.subreddit("offmychest")
 for submission in subreddit.top(time_filter='day', limit=1):
     post_title = submission.title
     post_url = submission.url
@@ -32,7 +33,7 @@ for submission in subreddit.top(time_filter='day', limit=1):
         page = context.new_page()
         page.goto(post_url, timeout=60000)
         # Wait for the div to be loaded
-        page.wait_for_selector(".uI_hDmU5GSiudtABRz_37", timeout=15000)
+        page.wait_for_selector(".uI_hDmU5GSiudtABRz_37", timeout=30000)
         # Get the bounding box of the div
         element_handle = page.query_selector(".uI_hDmU5GSiudtABRz_37")
         bounding_box = element_handle.bounding_box()
@@ -70,7 +71,7 @@ for submission in subreddit.top(time_filter='day', limit=1):
     print("Start Time is : ", start_time)
 
     # Cut the video to be 3 seconds longer than the audio, starting at the random start time
-    video_duration = audio_duration + 1
+    video_duration = audio_duration + 0
     video = video.subclip(start_time, start_time + video_duration)
 
     # Overlay the custom image on the video
@@ -81,16 +82,12 @@ for submission in subreddit.top(time_filter='day', limit=1):
     final_video = CompositeVideoClip([video, image])
     final_video = final_video.set_audio(combined_audio)
 
-    # Load the final video
-    final_video = VideoFileClip("final1.mp4")
+    video2=VideoFileClip("outro.mp4")
 
-    # Load the outro video
-    outro_video = VideoFileClip("outro.mp4")
+    # Concatenate the two videos together
+    result = concatenate_videoclips([final_video, video2])
 
-    # Concatenate the final video and the outro video
-    final_video = CompositeVideoClip([final_video, outro_video])
-
-    # Save the final video with the outro
-    final_video.write_videofile("final_with_outro.mp4")
-    print("The final video with outro has been saved as final_with_outro.mp4")
-    print("Use Title : ", post_title)
+    # Write the final video to a file
+    result.write_videofile("result.mp4")
+    os.remove("post.png")
+    os.remove("test.mp3")
