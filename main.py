@@ -6,9 +6,9 @@ import random
 import os
 
 # Connect to the Reddit API
-reddit = praw.Reddit(client_id='XJauAx6ojQ442IOs9tlyFg',
-                     client_secret='YWJHr2B3SJTr1MF9ljElwLLSAx0hjA',
-                     user_agent='basitcarry')
+reddit = praw.Reddit(client_id='yourclientid',
+                     client_secret='yourclientsecret',
+                     user_agent='yourusernmae')
 
 # Get the top post from the AskMe subreddit for today
 #AmItheAsshole offmychest unpopularopinion copypasta
